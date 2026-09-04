@@ -11,8 +11,8 @@ import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_stre
 
 Widget liveStreamingPage({required bool isHost}) {
   return ZegoUIKitPrebuiltLiveStreaming(
-    appID: -1, // your AppID,
-    appSign: 'your AppSign',
+    appID: 1883215575,
+    appSign: '7b5391081998de1b813d9a93d4049c62043881028f4ea30aa6371f397ebe9d40',
     userID: 'local user id',
     userName: 'local user name',
     liveID: 'live id',
