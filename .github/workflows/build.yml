@@ -24,9 +24,20 @@ jobs:
 
       - name: Build APK
         run: |
+          # حذف أدوات الفحص والاختبار الثانوية التي تسبب التعارض
           sed -i '/flutter_lints/d' example/pubspec.yaml || true
           sed -i '/flutter_lints/d' pubspec.yaml || true
+          sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
+          
+          # فرض تجاوز تعارض حزمة path نهائياً
+          cat << 'EOF' >> example/pubspec.yaml
+
+          dependency_overrides:
+            path: any
+          EOF
+          
+          # الانتقال لمجلد التطبيق وتجميع الـ APK
           cd example
           flutter pub get
           flutter build apk --release
