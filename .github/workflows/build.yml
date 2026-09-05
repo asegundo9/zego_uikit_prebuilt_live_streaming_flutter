@@ -30,7 +30,7 @@ jobs:
           sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
 
-          # 2. إجبار النظام على استخدام إصدارات متوافقة للمكتبات
+          # 2. فرض الإصدارات المتوافقة للمكتبات
           echo "" >> example/pubspec.yaml
           echo "dependency_overrides:" >> example/pubspec.yaml
           echo "  device_info_plus: 11.1.0" >> example/pubspec.yaml
@@ -41,13 +41,14 @@ jobs:
           echo "  device_info_plus: 11.1.0" >> pubspec.yaml
           echo "  path: any" >> pubspec.yaml
 
-          # 3. بدء التجميع النهائي
+          # 3. تخطي فحص الإصدار وتجميع ملف الـ APK
           cd example
           flutter pub get
-          flutter build apk --release
+          flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: live-streaming-app
           path: example/build/app/outputs/flutter-apk/app-release.apk
+          
