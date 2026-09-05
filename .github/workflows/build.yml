@@ -19,7 +19,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
+          flutter-version: '3.24.5'
           cache: true
 
       - name: Build APK
@@ -27,7 +27,6 @@ jobs:
           sed -i '/flutter_lints/d' example/pubspec.yaml || true
           sed -i '/flutter_lints/d' pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
-          rm -f example/pubspec.lock pubspec.lock || true
           cd example
           flutter pub get
           flutter build apk --release
@@ -37,3 +36,4 @@ jobs:
         with:
           name: live-streaming-app
           path: example/build/app/outputs/flutter-apk/app-release.apk
+          
