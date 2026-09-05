@@ -30,14 +30,16 @@ jobs:
           sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
 
-          # 2. فرض الإصدارات المتوافقة للمكتبات
+          # 2. تثبيت إصدارات متوافقة لتفادي تعارض أندرويد
           echo "" >> example/pubspec.yaml
           echo "dependency_overrides:" >> example/pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> example/pubspec.yaml
           echo "  device_info_plus: 11.1.0" >> example/pubspec.yaml
           echo "  path: any" >> example/pubspec.yaml
 
           echo "" >> pubspec.yaml
           echo "dependency_overrides:" >> pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> pubspec.yaml
           echo "  device_info_plus: 11.1.0" >> pubspec.yaml
           echo "  path: any" >> pubspec.yaml
 
@@ -51,4 +53,3 @@ jobs:
         with:
           name: live-streaming-app
           path: example/build/app/outputs/flutter-apk/app-release.apk
-          
