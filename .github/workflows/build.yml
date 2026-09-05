@@ -30,24 +30,28 @@ jobs:
           sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
 
-          # 2. تثبيت المكتبات المتوافقة
+          # 2. فرض الإصدارات المستقرة للمكتبات ومنع سحب إصدارات غير متوافقة
           echo "" >> example/pubspec.yaml
           echo "dependency_overrides:" >> example/pubspec.yaml
+          echo "  file_picker: 8.0.5" >> example/pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> example/pubspec.yaml
           echo "  device_info_plus: 11.1.0" >> example/pubspec.yaml
           echo "  path: any" >> example/pubspec.yaml
 
           echo "" >> pubspec.yaml
           echo "dependency_overrides:" >> pubspec.yaml
+          echo "  file_picker: 8.0.5" >> pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> pubspec.yaml
           echo "  device_info_plus: 11.1.0" >> pubspec.yaml
           echo "  path: any" >> pubspec.yaml
 
-          # 3. ترقية Gradle وأدوات الأندرويد تلقائياً لتتوافق تماماً مع Java 17
+          # 3. ترقية Gradle وضبط مسار أدوات الأندرويد
           sed -i 's/gradle-[0-9.]\+-all.zip/gradle-7.6.1-all.zip/g' example/android/gradle/wrapper/gradle-wrapper.properties || true
           sed -i 's/gradle-[0-9.]\+-bin.zip/gradle-7.6.1-all.zip/g' example/android/gradle/wrapper/gradle-wrapper.properties || true
           sed -i "s/com.android.tools.build:gradle:[0-9.]\+/com.android.tools.build:gradle:7.3.0/g" example/android/build.gradle || true
           sed -i "s/ext.kotlin_version = ['\"][0-9.]\+['\"]/ext.kotlin_version = '1.8.22'/g" example/android/build.gradle || true
 
-          # 4. بدء تجميع ملف الـ APK النهائي
+          # 4. تجميع الـ APK النهائي
           cd example
           flutter pub get
           flutter build apk --release --android-skip-build-dependency-validation
@@ -57,4 +61,3 @@ jobs:
         with:
           name: live-streaming-app
           path: example/build/app/outputs/flutter-apk/app-release.apk
-          
