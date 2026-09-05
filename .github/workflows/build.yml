@@ -24,20 +24,24 @@ jobs:
 
       - name: Build APK
         run: |
-          # حذف أدوات الفحص والاختبار الثانوية التي تسبب التعارض
+          # 1. إزالة أدوات الفحص والاختبار الثانوية
           sed -i '/flutter_lints/d' example/pubspec.yaml || true
           sed -i '/flutter_lints/d' pubspec.yaml || true
           sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
           rm -f example/analysis_options.yaml analysis_options.yaml || true
-          
-          # فرض تجاوز تعارض حزمة path نهائياً
-          cat << 'EOF' >> example/pubspec.yaml
 
-          dependency_overrides:
-            path: any
-          EOF
-          
-          # الانتقال لمجلد التطبيق وتجميع الـ APK
+          # 2. إجبار النظام على استخدام إصدارات متوافقة للمكتبات
+          echo "" >> example/pubspec.yaml
+          echo "dependency_overrides:" >> example/pubspec.yaml
+          echo "  device_info_plus: 11.1.0" >> example/pubspec.yaml
+          echo "  path: any" >> example/pubspec.yaml
+
+          echo "" >> pubspec.yaml
+          echo "dependency_overrides:" >> pubspec.yaml
+          echo "  device_info_plus: 11.1.0" >> pubspec.yaml
+          echo "  path: any" >> pubspec.yaml
+
+          # 3. بدء التجميع النهائي
           cd example
           flutter pub get
           flutter build apk --release
@@ -47,4 +51,3 @@ jobs:
         with:
           name: live-streaming-app
           path: example/build/app/outputs/flutter-apk/app-release.apk
-          
