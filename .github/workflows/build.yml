@@ -24,34 +24,10 @@ jobs:
 
       - name: Build APK
         run: |
-          # 1. إزالة أدوات الفحص والاختبار الروتينية
-          sed -i '/flutter_lints/d' example/pubspec.yaml || true
-          sed -i '/flutter_lints/d' pubspec.yaml || true
-          sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
-          rm -f example/analysis_options.yaml analysis_options.yaml || true
-          # 2. فرض الإصدارات المستقرة والمتوافقة للمكتبات
-          echo "" >> example/pubspec.yaml
-          echo "dependency_overrides:" >> example/pubspec.yaml
-          echo "  file_picker: 8.1.7" >> example/pubspec.yaml
-          echo "  connectivity_plus: 5.0.2" >> example/pubspec.yaml
-          echo "  device_info_plus: 11.3.0" >> example/pubspec.yaml
-          echo "  package_info_plus: 8.1.2" >> example/pubspec.yaml
-          echo "  path: any" >> example/pubspec.yaml
-          echo "" >> pubspec.yaml
-          echo "dependency_overrides:" >> pubspec.yaml
-          echo "  file_picker: 8.1.7" >> pubspec.yaml
-          echo "  connectivity_plus: 5.0.2" >> pubspec.yaml
-          echo "  device_info_plus: 11.3.0" >> pubspec.yaml
-          echo "  package_info_plus: 8.1.2" >> pubspec.yaml
-          echo "  path: any" >> pubspec.yaml
-          # 3. ضبط compileSdkVersion داخل build.gradle الخاص بالتطبيق
-          if [ -f example/android/app/build.gradle ]; then
-            sed -i "s/compileSdkVersion flutter.compileSdkVersion/compileSdkVersion 34/g" example/android/app/build.gradle || true
-          fi
-          # 4. تجميع الـ APK النهائي (باستخدام إعدادات Gradle الافتراضية المتوافقة مع Flutter الحديث)
           cd example
           flutter pub get
           flutter build apk --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
