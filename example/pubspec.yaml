@@ -25,11 +25,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-dependency_overrides:
-  file_picker: 8.1.7
-  connectivity_plus: 5.0.2
-  device_info_plus: 11.3.0
-  package_info_plus: 8.1.2
-  flutter_lints: 4.0.0
-  path: any
