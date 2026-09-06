@@ -136,3 +136,8 @@ class _LivePageState extends State<LivePage> {
         userID: localUserID,
         userName: localUserName,
         liveID: widget.liveID,
+        config: config,
+      ),
+    );
+  }
+}
