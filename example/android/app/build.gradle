@@ -17,7 +17,7 @@ def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "
 
 android {
     namespace "com.zegocloud.uikit.flutter.example.live_streaming"
-    compileSdk 34
+    compileSdk 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -35,7 +35,7 @@ android {
     defaultConfig {
         applicationId "com.zegocloud.uikit.flutter.example.live_streaming"
         minSdk 21
-        targetSdk 34
+        targetSdk 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
