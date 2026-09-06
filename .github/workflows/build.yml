@@ -1,250 +1,58 @@
-import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:zego_uikit/zego_uikit.dart';
-import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
+name: Build Android APK
 
-class ZegoConfig {
-  static const int appID = 1883215575;
-  static const String appSign =
-      '7b5391081998de1b813d9a93d4049c62043881028f4ea30aa6371f397ebe9d40';
-}
+on:
+  workflow_dispatch:
 
-final String localUserID = '${Random().nextInt(90000) + 10000}';
-final String localUserName = 'user_$localUserID';
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  ZegoUIKit().initLog().then((_) {
-    runApp(const LiveStreamApp());
-  });
-}
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-class LiveStreamApp extends StatelessWidget {
-  const LiveStreamApp({super.key});
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.5'
+          cache: true
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'ZEGOCLOUD Live Streaming',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF141622),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF6C5CE7),
-          surface: Color(0xFF1E2337),
-        ),
-      ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final TextEditingController _roomIDController = TextEditingController(
-    text: '${Random().nextInt(9000) + 1000}',
-  );
-
-  @override
-  void dispose() {
-    _roomIDController.dispose();
-    super.dispose();
-  }
-
-  void _navigateToLive(BuildContext context, {required bool isHost}) {
-    final roomID = _roomIDController.text.trim();
-    if (roomID.isEmpty) return;
-
-    if (ZegoUIKitPrebuiltLiveStreamingController().minimize.isMinimizing) {
-      return;
-    }
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LivePage(
-          liveID: roomID,
-          isHost: isHost,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ZegoUIKitPrebuiltLiveStreamingMiniPopScope(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Live Stream Portal',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: const Color(0xFF6C5CE7).withOpacity(0.2),
-                  child: const Icon(
-                    Icons.cell_tower,
-                    size: 44,
-                    color: Color(0xFF6C5CE7),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Your User ID: $localUserID',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Join with another device using the same Live ID',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const SizedBox(height: 32),
-                TextFormField(
-                  controller: _roomIDController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Live Room ID',
-                    prefixIcon: const Icon(Icons.numbers),
-                    filled: true,
-                    fillColor: const Color(0xFF1E2337),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.videocam, color: Colors.white),
-                        label: const Text(
-                          'Start Live',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6C5CE7),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () => _navigateToLive(context, isHost: true),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.remove_red_eye,
-                            color: Colors.white),
-                        label: const Text(
-                          'Watch Live',
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2C324B),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () =>
-                            _navigateToLive(context, isHost: false),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class LivePage extends StatefulWidget {
-  final String liveID;
-  final bool isHost;
-
-  const LivePage({
-    super.key,
-    required this.liveID,
-    this.isHost = false,
-  });
-
-  @override
-  State<LivePage> createState() => _LivePageState();
-}
-
-class _LivePageState extends State<LivePage> {
-  @override
-  Widget build(BuildContext context) {
-    final config = widget.isHost
-        ? ZegoUIKitPrebuiltLiveStreamingConfig.host()
-        : ZegoUIKitPrebuiltLiveStreamingConfig.audience();
-
-    config.avatarBuilder = customAvatarBuilder;
-
-    return SafeArea(
-      child: ZegoUIKitPrebuiltLiveStreaming(
-        appID: ZegoConfig.appID,
-        appSign: ZegoConfig.appSign,
-        userID: localUserID,
-        userName: localUserName,
-        liveID: widget.liveID,
-        config: config,
-      ),
-    );
-  }
-}
-
-Widget customAvatarBuilder(
-  BuildContext context,
-  Size size,
-  ZegoUIKitUser? user,
-  Map<String, dynamic> extraInfo,
-) {
-  final uid = user?.id ?? 'default';
-  return CachedNetworkImage(
-    imageUrl: 'https://robohash.org/$uid.png',
-    imageBuilder: (context, imageProvider) => Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        image: DecorationImage(
-          image: imageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
-    ),
-    progressIndicatorBuilder: (context, url, downloadProgress) =>
-        CircularProgressIndicator(value: downloadProgress.progress),
-    errorWidget: (context, url, error) {
-      return ZegoAvatar(user: user, avatarSize: size);
-    },
-  );
-}
+      - name: Build APK
+        run: |
+          # 1. إزالة أدوات الفحص والاختبار الروتينية
+          sed -i '/flutter_lints/d' example/pubspec.yaml || true
+          sed -i '/flutter_lints/d' pubspec.yaml || true
+          sed -i '/flutter_test:/,/sdk: flutter/d' example/pubspec.yaml || true
+          rm -f example/analysis_options.yaml analysis_options.yaml || true
+          # 2. فرض الإصدارات المستقرة والمتوافقة للمكتبات
+          echo "" >> example/pubspec.yaml
+          echo "dependency_overrides:" >> example/pubspec.yaml
+          echo "  file_picker: 8.1.7" >> example/pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> example/pubspec.yaml
+          echo "  device_info_plus: 11.3.0" >> example/pubspec.yaml
+          echo "  path: any" >> example/pubspec.yaml
+          echo "" >> pubspec.yaml
+          echo "dependency_overrides:" >> pubspec.yaml
+          echo "  file_picker: 8.1.7" >> pubspec.yaml
+          echo "  connectivity_plus: 5.0.2" >> pubspec.yaml
+          echo "  device_info_plus: 11.3.0" >> pubspec.yaml
+          echo "  path: any" >> pubspec.yaml
+          # 3. ترقية Gradle وضبط مسار أدوات الأندرويد
+          sed -i 's/gradle-[0-9.]\+-all.zip/gradle-7.6.1-all.zip/g' example/android/gradle/wrapper/gradle-wrapper.properties || true
+          sed -i 's/gradle-[0-9.]\+-bin.zip/gradle-7.6.1-all.zip/g' example/android/gradle/wrapper/gradle-wrapper.properties || true
+          sed -i "s/com.android.tools.build:gradle:[0-9.]\+/com.android.tools.build:gradle:7.3.0/g" example/android/build.gradle || true
+          sed -i "s/ext.kotlin_version = ['\"][0-9.]\+['\"]/ext.kotlin_version = '1.8.22'/g" example/android/build.gradle || true
+          # 4. تجميع الـ APK النهائي
+          cd example
+          flutter pub get
+          flutter build apk --release --android-skip-build-dependency-validation
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-streaming-app
+          path: example/build/app/outputs/flutter-apk/app-release.apk
